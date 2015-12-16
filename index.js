@@ -31,6 +31,24 @@ console.log('Server running at http://127.0.0.1:2000/. Process PID: ', process.p
 var memwatch = require('memwatch-next');
 
 
+//memwatch.on('leak', function(info) {
+//	console.error('Memory leak detected: ', info);
+//});
+
+
+var hd;
+var util = require('util');
 memwatch.on('leak', function(info) {
-	console.error('Memory leak detected: ', info);
+
+	console.log('========================== Memory leak detected ======>' + '\n')
+	console.error(info);
+
+	if (!hd) {
+		hd = new memwatch.HeapDiff();
+	} else {
+		var diff = hd.end();
+		console.log('======= Diff with previous snapshot  === >');
+		console.error(util.inspect(diff, true, null));
+		hd = null;
+	}
 });
