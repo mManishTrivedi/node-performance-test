@@ -16,4 +16,21 @@ var server = http.createServer(function (req, res) {
 // default event listener limit is 10 and we are listing 'request' event 1000 time so make it infinity
 server.setMaxListeners(0);
 // htop -p  {process.pid} to track cpu and memory
+
 console.log('Server running at http://127.0.0.1:2000/. Process PID: ', process.pid);
+
+
+//generate lots of req by "while true; do curl http://127.0.0.1:2000/; done"
+
+
+/**
+ * ========================================== 
+ * 		 memwatch-next setup and watch growth
+ * ==========================================
+ */
+var memwatch = require('memwatch-next');
+
+
+memwatch.on('leak', function(info) {
+	console.error('Memory leak detected: ', info);
+});
