@@ -10,6 +10,8 @@
 
   "dependencies": {
     "memwatch-next": "*",
-    "heapdump" : "*"
+    "heapdump" : "*",
+    "toobusy-js" : "*",
+    "express" : "*"
   }
 }

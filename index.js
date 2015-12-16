@@ -3,16 +3,41 @@
  */
 
 
-var http = require('http');
+var http = require('http'),
+	toobusy = require('toobusy-js'),
+	express = require('express');
+
+var app = express();
+
+
+//https://github.com/STRML/node-toobusy
+// middleware which blocks requests when we're too busy
+app.use(function(req, res, next) {
+	if (toobusy()) {
+
+		console.log("503, I'm busy right now, sorry.");
+		res.send(503, "I'm busy right now, sorry." + '\n');
+
+	} else {
+		next();
+	}
+});
+
+
 var number_of_req=0;
 
-var server = http.createServer(function (req, res) {
+var server = app.listen(2000);
+
+app.use(function (req, res) {
+
 	for (var i=0; i<1000; i++) {
 		server.on('request', function leakyfunc() {});
 	}
 
 	res.end('Hello World =====> '+ (number_of_req++) + '\n');
-}).listen(2000, '127.0.0.1');
+});
+
+
 // default event listener limit is 10 and we are listing 'request' event 1000 time so make it infinity
 server.setMaxListeners(0);
 // htop -p  {process.pid} to track cpu and memory
@@ -21,7 +46,6 @@ console.log('Server running at http://127.0.0.1:2000/. Process PID: ', process.p
 
 
 //generate lots of req by "while true; do curl http://127.0.0.1:2000/; done"
-
 
 /**
  * ========================================== 
@@ -39,7 +63,7 @@ var hd;
 
 memwatch.on('leak', function(info) {
 
-	console.log('========================== Memory leak detected ======>' + '\n')
+	console.log('========================== Memory leak detected ======>')
 	console.error(info);
 
 	if (!hd) {
@@ -73,7 +97,7 @@ memwatch.on('leak', function(info) {
 
 memwatch.on('stats', function(stats) {
 
-	console.log('========================== State detected ======>' + '\n')
+	console.log('========================== State detected ======>')
 	console.error(stats);
 
 });
