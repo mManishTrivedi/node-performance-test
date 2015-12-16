@@ -9,6 +9,7 @@
   "author": "mManishTrivedi",
 
   "dependencies": {
-    "memwatch-next": "*"
+    "memwatch-next": "*",
+    "heapdump" : "*"
   }
 }

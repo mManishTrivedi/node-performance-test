@@ -29,15 +29,14 @@ console.log('Server running at http://127.0.0.1:2000/. Process PID: ', process.p
  * ==========================================
  */
 var memwatch = require('memwatch-next');
+var heapdump = require('heapdump');
 
 
-//memwatch.on('leak', function(info) {
-//	console.error('Memory leak detected: ', info);
-//});
-
-
-var hd;
+// utility
 var util = require('util');
+var hd;
+
+
 memwatch.on('leak', function(info) {
 
 	console.log('========================== Memory leak detected ======>' + '\n')
@@ -51,4 +50,30 @@ memwatch.on('leak', function(info) {
 		console.error(util.inspect(diff, true, null));
 		hd = null;
 	}
+
+
+	// Heapdump : dump into current dir
+	var file = __dirname + '/myapp-' + process.pid + '-' + Date.now() + '.heapsnapshot';
+	heapdump.writeSnapshot(file, function(err){
+		if (err)
+			console.error(err);
+		else
+			console.error('============= Wrote snapshot: ' + file);
+	});
+
+
+
+
+});
+
+
+
+//When V8 performs a garbage collection (technically, we're talking about a full GC
+// with heap compaction), memwatch will emit a stats event.
+
+memwatch.on('stats', function(stats) {
+
+	console.log('========================== State detected ======>' + '\n')
+	console.error(stats);
+
 });
